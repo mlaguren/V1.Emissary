@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<!-- Styles -->
+<link href="/css/bootstrap.css" rel="stylesheet">
+<link href="/css/bootstrap-responsive.css" rel="stylesheet">
+<style>
+    body {
+    padding-top: 60px; /* When using the navbar-top-fixed */
+    }
+    .center {
+     float: none;
+     margin-left: auto;
+     margin-right: auto;
+    }
+    .centercontents {
+    text-align: center !important;
+    }
+    .alignrightcontents {
+    text-align: right !important;
+    }
+    body
+    {
+    background-image:url('/img/glyphicons-halflings-white.png');
+    }
+</style>
+
+</head>
+<body>
+
+<%= yield %>
+
+<!-- jQuery via Google + local fallback, see h5bp.com -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/jquery-1.7.1.min.js"><\/script>')</script>
+
+<!-- Bootstrap jQuery Plugins, compiled and minified -->
+<script src="/js/bootstrap.min.js"></script>
+</body>
+</html>
