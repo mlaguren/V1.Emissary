@@ -1,5 +1,7 @@
 require 'sinatra'
 require 'rufus-scheduler'
+require './lib/v1rss'
+require 'yaml'
 
 helpers do
   def protected!
@@ -28,11 +30,12 @@ end
 
 scheduler = Rufus::Scheduler.new
 
-scheduler.every '1s' do
+scheduler.every '60s' do
 
   # Check if the rss file is configured
   if File.file?('./config/rss.yaml')
-    p 'file exists'
+    v1feed = V1RSS.new
+    p v1feed.get_story
   end
 end
 
@@ -46,4 +49,10 @@ end
 get '/admin' do
   protected!
   erb :admin
+end
+
+#  Webhook for JIRA to process updated issues associated with V1
+
+get '/jira' do
+
 end
