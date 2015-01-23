@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'rufus-scheduler'
 
 helpers do
   def protected!
@@ -21,6 +22,21 @@ configure do
   file.sync = true
   use Rack::CommonLogger, file
 end
+
+
+#  When Sinatra starts up, begin polling the RSS feed
+
+scheduler = Rufus::Scheduler.new
+
+scheduler.every '1s' do
+
+  # Check if the rss file is configured
+  if File.file?('./config/rss.yaml')
+    p 'file exists'
+  end
+end
+
+
 
 get '/' do
 
