@@ -2,6 +2,8 @@ require 'sinatra'
 require 'rufus-scheduler'
 require './lib/v1rss'
 require 'yaml'
+require 'httparty'
+
 
 helpers do
   def protected!

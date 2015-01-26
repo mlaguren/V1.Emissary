@@ -6,8 +6,9 @@ class V1RSS
 
   def initialize
     #   get rss feed url from config file
-    
-    $FEED = YAML::load(File.open("config/rss.yaml"))
+
+    $FEED = YAML::load(File.open("config/rss.yml"))
+
   end
 
   def get_story

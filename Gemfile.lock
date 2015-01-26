@@ -4,7 +4,12 @@ GEM
     backports (3.6.4)
     haml (4.0.5)
       tilt
+    httparty (0.13.3)
+      json (~> 1.8)
+      multi_xml (>= 0.5.2)
+    json (1.8.2)
     multi_json (1.10.1)
+    multi_xml (0.5.5)
     rack (1.6.0)
     rack-protection (1.5.3)
       rack
@@ -33,6 +38,7 @@ PLATFORMS
 
 DEPENDENCIES
   haml
+  httparty
   rufus-scheduler
   sinatra (= 1.4.5)
   sinatra-contrib (= 1.4.2)
