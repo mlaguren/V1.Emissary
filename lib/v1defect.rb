@@ -11,14 +11,14 @@ class V1Defect
   
   end
 
-  def get_details
-    test = self.class.get("/MacysIncIPWSandbox/rest-1.v1/Data/Defect?where=Number='D-04942'") 
-    return test
+  def get_details(story)
+    details = self.class.get("/MacysIncIPWSandbox/rest-1.v1/Data/Defect?where=Number='D-04942'") 
+    return details
   end
 end
 
 #  Convert to rspec test 
-#  v1 = V1Defect.new
-#  response =  v1.get_details
-#  details = response.to_json
-#  puts details
+  v1 = V1Defect.new
+  response =  v1.get_details "D-04942"
+  puts response['Assets']['Asset']['Attribute'].length
+  puts response['Assets']['Asset']['Attribute'].map {|h1| h1['__content__'] if h1['name']=="VersionAffected"}.compact.first
