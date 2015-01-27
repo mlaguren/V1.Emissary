@@ -21,4 +21,7 @@ end
   v1 = V1Defect.new
   response =  v1.get_details "D-04942"
   puts response['Assets']['Asset']['Attribute'].length
-  puts response['Assets']['Asset']['Attribute'].map {|h1| h1['__content__'] if h1['name']=="VersionAffected"}.compact.first
+  #puts response['Assets']['Asset']['Attribute'].map {|h1| h1['__content__'] if h1['name']=="VersionAffected"}.compact.first
+
+  fields = ['Name', 'Description','VersionAffected']
+  fields.each { |field| puts response['Assets']['Asset']['Attribute'].map {|h1| h1['__content__'] if h1['name']=="#{field}"}.compact.first}
