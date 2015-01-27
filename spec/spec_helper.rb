@@ -1,2 +1,4 @@
 require 'simplecov'
-SimpleCov.start
+SimpleCov.start 
+
+require_relative '../lib/v1rss'

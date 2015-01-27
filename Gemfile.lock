@@ -3,6 +3,7 @@ GEM
   specs:
     backports (3.6.4)
     diff-lcs (1.2.5)
+    docile (1.1.5)
     haml (4.0.5)
       tilt
     httparty (0.13.3)
@@ -16,6 +17,7 @@ GEM
       rack
     rack-test (0.6.3)
       rack (>= 1.0)
+    rake (10.3.2)
     rspec (3.1.0)
       rspec-core (~> 3.1.0)
       rspec-expectations (~> 3.1.0)
@@ -30,6 +32,11 @@ GEM
     rspec-support (3.1.2)
     rufus-scheduler (3.0.9)
       tzinfo
+    simplecov (0.9.1)
+      docile (~> 1.1.0)
+      multi_json (~> 1.0)
+      simplecov-html (~> 0.8.0)
+    simplecov-html (0.8.0)
     sinatra (1.4.5)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -52,7 +59,9 @@ PLATFORMS
 DEPENDENCIES
   haml
   httparty
+  rake
   rspec
   rufus-scheduler
+  simplecov
   sinatra (= 1.4.5)
   sinatra-contrib (= 1.4.2)
