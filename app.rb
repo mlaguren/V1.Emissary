@@ -39,9 +39,9 @@ scheduler.every '60s' do
   if File.file?('./config/rss.yml')
     v1feed = V1RSS.new
     story_id = v1feed.get_story
-    puts "#{story_id}"
     story = V1Defect.new
-    p story.get_details story_id
+    details = story.get_details story_id
+    
   end
 end
 
@@ -60,5 +60,5 @@ end
 #  Webhook for JIRA to process updated issues associated with V1
 
 get '/jira' do
-
+  
 end
