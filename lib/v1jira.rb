@@ -12,26 +12,41 @@ class V1Jira
   base_uri $JIRA['base_uri'] 
 
   def initialize
-  
+    $DEFAULT = YAML::load(File.open("default/jira.yml")) 
   end
 
   def create_ticket
-    payload = {:fields => {:project => {:key => "MCOMRE"}, :summary => "Test Summary", :description => "Test Description", :issuetype => {:name =>"Bug"}}}
-    puts payload.class
-    puts payload.to_json.class
+    payload = {
+                :fields => 
+                  {:project => 
+                    {:key => "#{$DEFAULT['project']}"}, 
+                     :summary => "Test Summary", 
+                     :description => "Test Description", 
+                     :customfield_10143 => [
+                        {
+                          :self => $DEFAULT['environment']['self'],
+                          :value => $DEFAULT['environment']['value'],
+                          :id => $DEFAULT['environment']['id']  
+                        }
+                     ],
+                     :issuetype => {:name => $DEFAULT['issuetype']['name']},
+                     :customfield_10181 => {:value => "WDS"}, 
+                     :customfield_12614 => {:id => "13634"}
+                   },
+                }
     response = self.class.post("/rest/api/2/issue/", 
                  :body => payload.to_json, 
-                 :options => { :headers => {'Content-Type' => 'application/json' } }) 
+                 :headers => {'Content-Type' => 'application/json' }) 
     return response
   end
 
   def get_ticket
-    ticket_details = self.class.get("/rest/api/2/issue/MCOMRE-48098")
-    ap ticket_details
+    ticket_details = self.class.get("/rest/api/2/issue/MCOMRE-46970")
+    File.open("custom.txt", 'w') {|f| f.write(ticket_details) }
   end
 
 end
 
-jira = V1Jira.new
-test = jira.create_ticket
-ap test
+#jira = V1Jira.new
+#test = jira.create_ticket
+#ap test
