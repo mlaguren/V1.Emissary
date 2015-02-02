@@ -3,7 +3,7 @@ require 'yaml'
 require 'json'
 
 
-describe V1Defect do
+describe V1Mapping do
 
   it "loads a yaml file" do
   

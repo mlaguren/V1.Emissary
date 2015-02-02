@@ -45,8 +45,8 @@ class V1Jira
     File.open("custom.txt", 'w') {|f| f.write(ticket_details) }
   end
 
+  def to_json
+    return self.class.to_json
+  end
 end
 
-#jira = V1Jira.new
-#test = jira.create_ticket
-#ap test
