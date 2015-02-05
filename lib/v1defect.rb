@@ -26,21 +26,20 @@ class V1Defect
   
   def updateStatus(story)
     ret = get_details(story)
+
+    # Send to JIRA: Custom_JIRA_Int_Status:64901
+    # Resolved in JIRA:  Custom_JIRA_Int_Status:64902
     
     storyURI = ret['Assets']['Asset']['href']
     xml = '<Asset>
-    <Attribute name="Custom_JIRAIntStatus.Name" act="set">"Resolved in JIRA"</Attribute>
+    <Attribute name="Custom_JIRAIntStatus" act="set">Custom_JIRA_Int_Status:64902</Attribute>
     </Asset>'
-
-#    storyURI = '/MacysComDev/rest-1.v1/Data/Custom_JIRA_Int_Status/64901'
-#    xml = '<Asset>
-#    <Attribute name="Name" act="set">"Resolved in JIRA"</Attribute>
-#    </Asset>'
 
     result = self.class.post("#{storyURI}", :body => xml,
                              :headers => {"content_type" => "application/xml"})
-    
-    print result
+
+    return 0 if result['Error']
+    return 1
   end
 
   def wasItSentToJira(story)
