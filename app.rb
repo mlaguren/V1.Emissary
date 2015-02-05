@@ -2,6 +2,7 @@ require 'sinatra'
 require 'rufus-scheduler'
 require './lib/v1rss'
 require './lib/v1defect'
+require './lib/v1jira'
 require 'yaml'
 require 'httparty'
 
@@ -33,8 +34,7 @@ end
 
 scheduler = Rufus::Scheduler.new
 
-scheduler.every '60s' do
-
+scheduler.every '5s' do
   # Check if the rss file is configured
   if File.file?('./config/rss.yml')
     v1feed = V1RSS.new
@@ -42,6 +42,8 @@ scheduler.every '60s' do
     story = V1Defect.new
     details = story.get_details story_id
     
+    print details
+    print "\n\n"
   end
 end
 

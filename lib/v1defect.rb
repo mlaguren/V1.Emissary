@@ -1,3 +1,4 @@
+require 'v1mapping'
 require 'httparty'
 
 class V1Defect 
@@ -8,11 +9,23 @@ class V1Defect
   base_uri $V1HOST['base_uri'] 
 
   def initialize
-  
+    $MAP = V1Mapping.new('config/mappings.yml').get_Map
   end
 
   def get_details(story)
-    details = self.class.get("/MacysIncIPWSandbox/rest-1.v1/Data/Defect?where=Number='D-04942'") 
+
+    theSelection = "sel=Number"    
+    $MAP.each do |k, v|
+    theSelection << "," << v
+    end 
+    
+    print theSelection + "\n"
+    uri="/rest-1.v1/Data/Defect?#{theSelection}&where=Number"
+    details = self.class.get("#{uri}=\'#{story}\'")
+
+print "Get -  #{$V1HOST['base_uri']}/#{uri}=\'#{story}\'\n\n"
+    print details
+    
     return details
   end
 end
