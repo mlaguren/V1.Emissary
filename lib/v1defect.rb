@@ -21,7 +21,7 @@ class V1Defect
     
     uri="#{$V1HOST['base_uri']}/rest-1.v1/Data/Defect?#{theSelection}&where=Number"
     details = self.class.get("#{uri}=\'#{story}\'")    
-    return details
+    return details.parsed_response
   end
   
   def updateStatus(story)
