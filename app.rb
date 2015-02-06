@@ -1,8 +1,8 @@
 require 'sinatra'
 require 'rufus-scheduler'
-require './lib/v1rss'
 require './lib/v1defect'
 require './lib/v1jira'
+require './lib/v1trigger'
 require 'yaml'
 require 'httparty'
 
@@ -36,14 +36,14 @@ scheduler = Rufus::Scheduler.new
 
 scheduler.every '5s' do
   # Check if the rss file is configured
-  if File.file?('./config/rss.yml')
-    v1feed = V1RSS.new
-    story_id = v1feed.get_story
-    story = V1Defect.new
-    details = story.get_details story_id
-    
-    print details
-    print "\n\n"
+  if File.file?('./config/v1config.yml')
+    v1 = V1Trigger.new
+    list = v1.get_list 
+    list.each do |story|
+      defect = V1Defect.new
+      details = defect.get_details story
+      p details
+    end
   end
 end
 
