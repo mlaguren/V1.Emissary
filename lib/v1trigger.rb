@@ -29,9 +29,7 @@ class V1Trigger
 
       dbDefect = @db.execute("select * from v1link where defect=\"#{defect}\"")
 #      dbDefect = @findDefect.execute(defect)
-      if dbDefect.size > 0
-        p "boo"
-      else
+      unless dbDefect.size > 0
         @db.execute("insert into v1link (defect) values (\"#{defect}\")")
 #        @insertDefect.execute(defect)
         list << defect
