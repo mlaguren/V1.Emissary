@@ -12,7 +12,7 @@ class V1Trigger
   base_uri $V1HOST['base_url']
 
   def initialize
-    @db = SQLite3::Database.new "v1link.db"
+    @db = SQLite3::Database.new $V1HOST['dbname']
     @findDefect = @db.prepare("select * from v1link where defect=?")
     @insertDefect = @db.prepare("insert into v1link (defect) values (?)")
   end
