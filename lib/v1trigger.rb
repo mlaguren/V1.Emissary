@@ -19,12 +19,10 @@ class V1Trigger
     uri=URI.encode("#{$V1HOST['base_uri']}/rest-1.v1/Data/Defect?#{theSelectionURi}")
     updateList = self.class.get("#{uri}")
 
-    #TODO: Switch to using xpath
-#    doc = Nokogiri::XML(updateList.body)
-    doc = updateList.parsed_response['Assets']['Asset']
     list = Array.new
-    doc.each do |pair|
-      list.push pair['Attribute']['__content__']
+    doc = Nokogiri::XML(updateList.body)
+    doc.xpath('/Assets/Asset/Attribute/text()').each do |v|
+      list << v.to_s
     end
 
     return list
