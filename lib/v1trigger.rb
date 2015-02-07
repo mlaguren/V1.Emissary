@@ -12,6 +12,9 @@ class V1Trigger
   base_uri $V1HOST['base_url']
 
   def initialize
+    @db = SQLite3::Database.new "v1link.db"
+    @findDefect = @db.prepare("select * from v1link where defect=?")
+    @insertDefect = @db.prepare("insert into v1link (defect) values (?)")
   end
 
   def get_list
@@ -22,7 +25,17 @@ class V1Trigger
     list = Array.new
     doc = Nokogiri::XML(updateList.body)
     doc.xpath('/Assets/Asset/Attribute/text()').each do |v|
-      list << v.to_s
+      defect = v.to_s
+
+      dbDefect = @db.execute("select * from v1link where defect=\"#{defect}\"")
+#      dbDefect = @findDefect.execute(defect)
+      if dbDefect.size > 0
+        p "boo"
+      else
+        @db.execute("insert into v1link (defect) values (\"#{defect}\")")
+#        @insertDefect.execute(defect)
+        list << defect
+      end
     end
 
     return list
