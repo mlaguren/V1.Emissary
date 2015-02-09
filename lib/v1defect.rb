@@ -30,7 +30,7 @@ class V1Defect
     return details
   end
 
-  def jiraMap
+  def getJiraList
     jiraContent = Hash.new
     @MAP.each do |k, v|
       next if k.start_with?('-')
