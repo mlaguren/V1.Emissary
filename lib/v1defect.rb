@@ -1,8 +1,10 @@
 require './lib/v1mapping'
 require 'httparty'
+require 'nokogiri'
 
 class V1Defect 
   include HTTParty
+  include Nokogiri
 
   $V1HOST = YAML::load(File.open("config/v1config.yml"))
   basic_auth $V1HOST['username'], $V1HOST['password']
@@ -21,7 +23,7 @@ class V1Defect
     
     uri="#{$V1HOST['base_uri']}/rest-1.v1/Data/Defect?#{theSelection}&where=Number"
     details = self.class.get("#{uri}=\'#{story}\'")    
-    return details.parsed_response
+    return details
   end
   
   def updateStatus(story)
@@ -43,15 +45,9 @@ class V1Defect
   end
 
   def wasItSentToJira(story)
-    ret = get_details(story)
-
-    list = ret['Assets']['Asset']['Attribute']
-    list.each do |pair|
-      if pair['name'] == "Custom_JIRAIntStatus.Name" then
-        if pair['__content__'] == "Send to JIRA"
-          return 1
-        end
-      end
+    doc = Nokogiri::XML(get_details(story).body)
+    if doc.xpath('//Attribute[@name="Custom_JIRAIntStatus.Name"]').text == "Send to JIRA"
+      return 1
     end
 
     return 0
