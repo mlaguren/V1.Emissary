@@ -61,6 +61,11 @@ end
 
 #  Webhook for JIRA to process updated issues associated with V1
 
-get '/jira' do
-  
-end
+post '/jira' do
+  jira_issue = JSON.parse(request.body.read)
+  story = jira_issue["issue"]["key"]
+
+  # Close Story Method Needed
+
+end  
+
