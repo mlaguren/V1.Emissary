@@ -40,8 +40,7 @@ scheduler.every '5s' do
     v1 = V1Trigger.new
     list = v1.get_list 
     list.each do |story|
-      defect = V1Defect.new
-      details = defect.get_details story
+      v1jira.create_ticket(V1Defect.new(story))
       p details
     end
   end
