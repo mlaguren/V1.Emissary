@@ -1,4 +1,5 @@
 require './lib/v1mapping'
+require './lib/v1persist'
 require 'httparty'
 require 'nokogiri'
 
@@ -12,6 +13,7 @@ class V1Defect
 
   def initialize(story)
     @mapping = V1Mapping.new('config/mappings.yml', 'config/static_mappings.yml')
+    @persist = V1Persist.new
     @MAP = @mapping.get_Map
     @sMAP = @mapping.get_sMap
     @story = story
@@ -60,8 +62,23 @@ class V1Defect
     result = self.class.post("#{storyURI}", :body => xml,
                              :headers => {"content_type" => "application/xml"})
 
-    return 0 if result['Error']
-    return 1
+    unless (result['Error'])
+      @persist.updateDefectStatus(@story)
+      return 1
+    end
+    return 0
+  end
+
+  def get_story
+    return @story
+  end
+
+  def addUrl(url)
+    @persist.updateDefect(@story, url)
+  end
+
+  def doesJiraLinkExist
+    return @persist.findDefect(@story)[1]
   end
 
   def wasItSentToJira
