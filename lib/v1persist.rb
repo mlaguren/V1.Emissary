@@ -19,15 +19,27 @@ class V1Persist
   end
 
   def createDefect(defect, jiralink)
-    return @db.execute("insert into v1link (defect, jira_link) values (\"#{defect}\", \"#{jiralink}\")")
+    begin
+      return @db.execute("insert into v1link (defect, jira_link) values (\"#{defect}\", \"#{jiralink}\")")
+    rescue SQLite3::Exception => e
+      print "Exception (v1persist): #{e}"
+    end
   end
 
   def updateDefect(defect, jiralink)
-    return @db.execute("update v1link set jira_link=\"#{jiralink}\" where defect = \"#{defect}\"")
+    begin
+      return @db.execute("update v1link set jira_link=\"#{jiralink}\" where defect = \"#{defect}\"")
+    rescue SQLite3::Exception => e
+      print "Exception (v1persist): #{e}"
+    end
   end
 
   def updateDefectStatus(defect)
-    return @db.execute("update v1link set status=\"Y\" where defect = \"#{defect}\"")
+    begin
+      return @db.execute("update v1link set status=\"Y\" where defect = \"#{defect}\"")
+    rescue SQLite3::Exception => e
+      print "Exception (v1persist): #{e}"
+    end
   end
 
 end
