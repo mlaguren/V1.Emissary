@@ -87,8 +87,6 @@ class V1Jira
                  :body => payload.to_json,
                  :headers => {'Content-Type' => 'application/json' })
 
-    p response
-
     url = $JIRA['base_uri'] + "/browse/" + response['key']
     return url
   end
