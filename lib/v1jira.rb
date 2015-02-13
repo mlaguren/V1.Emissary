@@ -13,9 +13,10 @@ class V1Jira
   basic_auth $JIRA['username'], $JIRA['password']
   base_uri $JIRA['base_uri'] 
 
-  def initialize
+  def initialize(defect)
     @DEFAULT = YAML::load(File.open("default/jira.yml"))
     @customFieldMap = getAllFieldsMap
+    @defect = defect
   end
 
   def getAllFieldsMap
@@ -59,15 +60,15 @@ class V1Jira
     return mapping
   end
 
-  def create_ticket(defect)
-    jiraPair = defect.getJiraList
+  def create_ticket
+    jiraPair = @defect.getJiraList
 
     mapping = jiraAPIMapping
     payload = {
         :fields =>
             {:project =>
                  {:key => "#{@DEFAULT['project']}"},
-             :summary => jiraPair['Summary'],
+             :summary => jiraPair['Summary'] + " (#{@defect.get_story})",
              :description => jiraPair['Description'],
              :customfield_10143 => [
                  {
@@ -85,11 +86,13 @@ class V1Jira
     response = self.class.post('/rest/api/latest/issue/',
                  :body => payload.to_json,
                  :headers => {'Content-Type' => 'application/json' })
-    return response
+
+    url = $JIRA['base_uri'] + "/browse/" + response['key']
+    return url
   end
 
   def get_ticket
-    ticket_details = self.class.get("/rest/api/2/issue/MCOMRE-46970")
+    ticket_details = self.class.get("/rest/api/2/issue/")
     File.open("custom.txt", 'w') {|f| f.write(ticket_details) }
   end
 

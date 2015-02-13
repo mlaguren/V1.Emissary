@@ -38,14 +38,19 @@ scheduler.every '5s' do
   # Check if the rss file is configured
   if File.file?('./config/v1config.yml')
     v1 = V1Trigger.new
-    list = v1.get_list 
+    list = v1.get_v1_list
     list.each do |story|
-      v1jira.create_ticket(V1Defect.new(story))
-      p details
+      d = V1Defect.new(story)
+      d.addUrl(V1Jira.new(d).create_ticket)
+    end
+
+    jlist = v1.get_v1defect_Jira_list
+    jlist.each do |issue|
+      dd = V1Defect.new(issue)
+      dd.updateStatus
     end
   end
 end
-
 
 
 get '/' do
@@ -58,13 +63,4 @@ get '/admin' do
   erb :admin
 end
 
-#  Webhook for JIRA to process updated issues associated with V1
-
-post '/jira' do
-  jira_issue = JSON.parse(request.body.read)
-  story = jira_issue["issue"]["key"]
-
-  # Close Story Method Needed
-
-end  
 
