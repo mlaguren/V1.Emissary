@@ -23,33 +23,6 @@ class V1Jira
     @customFieldMap = self.class.get("/rest/api/2/field")
   end
 
-  def jw_create_ticket(defect)
-    jiraPair = defect.getJiraList
-
-    payload = {
-        :fields =>
-            {:project =>
-                 {:key => "#{@DEFAULT['project']}"},
-             :summary => "Test Summary",
-             :description => "Test Description",
-             :customfield_10143 => [
-                 {
-                     :self => @DEFAULT['environment']['self'],
-                     :value => @DEFAULT['environment']['value'],
-                     :id => @DEFAULT['environment']['id']
-                 }
-             ],
-             :issuetype => {:name => @DEFAULT['issuetype']['name']},
-             :customfield_10181 => {:value => "WDS"},
-             :customfield_12614 => {:id => "13634"}
-            },
-    }
-    response = self.class.post("/rest/api/2/issue/",
-                               :body => payload.to_json,
-                               :headers => {'Content-Type' => 'application/json' })
-    return response
-  end
-
   def jiraAPIMapping
     mapping = Hash.new
     mp = @customFieldMap
@@ -79,13 +52,19 @@ class V1Jira
              ],
              :issuetype => {:name => jiraPair['issuetype']},
              mapping['Functional Group'] => {:value => "WDS"},
-             mapping['Project Manager'] => {:id => "13634"}
+             :versions => [
+                 {
+                     :name => "#{jiraPair['Release']}",
+                 }
+             ],
             },
     }
 
     response = self.class.post('/rest/api/latest/issue/',
                  :body => payload.to_json,
                  :headers => {'Content-Type' => 'application/json' })
+
+    p response
 
     url = $JIRA['base_uri'] + "/browse/" + response['key']
     return url
