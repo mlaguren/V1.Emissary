@@ -17,6 +17,8 @@ class V1Trigger
     @db = SQLite3::Database.new $V1HOST['dbname']
     @findDefect = @db.prepare("select * from v1link where defect=?")
     @insertDefect = @db.prepare("insert into v1link (defect) values (?)")
+
+    @TRIGGER_STATUS = 'Complete'
   end
 
   def get_Jira_list
@@ -28,7 +30,7 @@ class V1Trigger
           doc = HTTParty.get('http://jiradev/rest/api/2/issue/' + issue.split('/').last + '?fields=status',
             :basic_auth => auth)
 
-          l << issue if doc['fields']['status']['name'] == $V1HOST['trigger_scan_status']
+          l << issue if doc['fields']['status']['name'] == @TRIGGER_STATUS
         end
     end
 
@@ -44,7 +46,7 @@ class V1Trigger
         doc = HTTParty.get('http://jiradev/rest/api/2/issue/' + issue.split('/').last + '?fields=status',
                            :basic_auth => auth)
         i = @db.execute('select defect from v1link where jira_link = "' + issue + '"')
-        l.push(i[0][0]) if doc['fields']['status']['name'] == $V1HOST['trigger_scan_status']
+        l.push(i[0][0]) if doc['fields']['status']['name'] == @TRIGGER_STATUS
       end
     end
 
