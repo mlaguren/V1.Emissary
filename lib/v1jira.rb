@@ -1,6 +1,7 @@
 require './lib/v1defect'
 require 'httparty'
 require 'nokogiri'
+require 'sanitize'
 require 'json'
 
 require 'awesome_print'
@@ -42,7 +43,7 @@ class V1Jira
             {:project =>
                  {:key => "#{@DEFAULT['project']}"},
              :summary => jiraPair['Summary'] + " (#{@defect.get_story})",
-             :description => jiraPair['Description'],
+             :description => Sanitize.clean(jiraPair['Description']),
              :customfield_10143 => [
                  {
                      :self => @DEFAULT['environment']['self'],
@@ -52,6 +53,7 @@ class V1Jira
              ],
              :issuetype => {:name => jiraPair['issuetype']},
              mapping['Functional Group'] => {:value => "WDS"},
+             mapping['Project Manager'] => {:id => "13634"},
              :versions => [
                  {
                      :name => "#{jiraPair['Release']}",
@@ -63,8 +65,6 @@ class V1Jira
     response = self.class.post('/rest/api/latest/issue/',
                  :body => payload.to_json,
                  :headers => {'Content-Type' => 'application/json' })
-
-    p response
 
     url = $JIRA['base_uri'] + "/browse/" + response['key']
     return url
