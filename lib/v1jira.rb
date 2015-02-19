@@ -46,14 +46,12 @@ class V1Jira
              :description => Sanitize.clean(jiraPair['Description']),
              :customfield_10143 => [
                  {
-                     :self => @DEFAULT['environment']['self'],
-                     :value => @DEFAULT['environment']['value'],
-                     :id => @DEFAULT['environment']['id']
+                     :value => jiraPair['Environment'],
                  }
              ],
              :issuetype => {:name => jiraPair['issuetype']},
-             mapping['Functional Group'] => {:value => "WDS"},
-             mapping['Project Manager'] => {:id => "13634"},
+             mapping['Functional Group'] => {:value => jiraPair['Functional Group']},
+             mapping['Project Manager'] => {:value => jiraPair['Project Manager']},
              :versions => [
                  {
                      :name => "#{jiraPair['Release']}",
