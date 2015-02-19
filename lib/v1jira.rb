@@ -43,19 +43,11 @@ class V1Jira
              :summary => jiraPair['Summary'] + " (#{@defect.get_story})",
              :description => Sanitize.clean(jiraPair['Description']),
              mapping['Release Milestone'] => {:value => jiraPair['Release Milestone']},
-             :customfield_10143 => [
-                 {
-                     :value => jiraPair['Environment'],
-                 }
-             ],
+             :customfield_10143 => [{:value => jiraPair['Environment'],}],
              :issuetype => {:name => jiraPair['issuetype']},
              mapping['Functional Group'] => {:value => jiraPair['Functional Group']},
              mapping['Project Manager'] => {:value => jiraPair['Project Manager']},
-             :versions => [
-                 {
-                     :name => "#{jiraPair['Release']}",
-                 }
-             ],
+             :versions => [{:name => "#{jiraPair['Release']}",}],
             },
     }
 
