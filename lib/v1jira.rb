@@ -15,7 +15,6 @@ class V1Jira
   base_uri $JIRA['base_uri'] 
 
   def initialize(defect)
-    @DEFAULT = YAML::load(File.open("default/jira.yml"))
     @customFieldMap = getAllFieldsMap
     @defect = defect
   end
@@ -36,14 +35,14 @@ class V1Jira
 
   def create_ticket
     jiraPair = @defect.getJiraList
-
     mapping = jiraAPIMapping
     payload = {
         :fields =>
             {:project =>
-                 {:key => "#{@DEFAULT['project']}"},
+                 {:key => "#{jiraPair['Project']}"},
              :summary => jiraPair['Summary'] + " (#{@defect.get_story})",
              :description => Sanitize.clean(jiraPair['Description']),
+             mapping['Release Milestone'] => {:value => jiraPair['Release Milestone']},
              :customfield_10143 => [
                  {
                      :value => jiraPair['Environment'],
