@@ -43,8 +43,12 @@ class V1Defect
     end
 
     @sMAP.each do |k, v|
-      jiraContent[k] << "," if jiraContent.has_key?(k)
-      jiraContent[k] = v
+#      jiraContent[k] << "," if jiraContent.has_key?(k)
+      if jiraContent.has_key?(k) && jiraContent[k].length > 0
+          next
+      else
+        jiraContent[k] = v
+      end
     end
 
     return jiraContent

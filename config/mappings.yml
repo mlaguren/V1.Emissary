@@ -8,3 +8,6 @@ VersionAffected:  VersionAffected
 VersionAffected:  Custom_CAPVersionAffected2.Name
 Created Date/Time:  CreateDate
 Components:  Custom_CAPComponent.Name
+Environment:  Environment
+Release Milestone:  Custom_CAPReleaseMilestone.Name
+

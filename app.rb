@@ -40,12 +40,16 @@ scheduler.every '5s' do
     v1 = V1Trigger.new
     list = v1.get_v1_list
     list.each do |story|
+      p "Creating JIRA ticket for V1 defect #{story}"
+
       d = V1Defect.new(story)
       d.addUrl(V1Jira.new(d).create_ticket)
     end
 
     jlist = v1.get_v1defect_Jira_list
     jlist.each do |issue|
+      p "Closing JIRA issue #{issue}"
+
       dd = V1Defect.new(issue)
       dd.updateStatus
     end

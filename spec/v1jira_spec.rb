@@ -5,7 +5,7 @@ require 'awesome_print'
 
 describe V1Jira do
   it "creates a brand new jira ticket" do
-    defect = V1Defect.new("D-05106")
+    defect = V1Defect.new("D-05346")
     issue = V1Jira.new(defect)
     jira_ticket = issue.create_ticket
 
