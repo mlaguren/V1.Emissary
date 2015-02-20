@@ -19,6 +19,7 @@ class V1Defect
     @story = story
     @details = get_details
     @doc = Nokogiri::XML(@details.body)
+    @JiraLink = ''
   end
 
   def get_details
@@ -59,18 +60,38 @@ class V1Defect
     # Resolved in JIRA:  Custom_JIRA_Int_Status:64902
     
     storyURI = @details['Assets']['Asset']['href']
-    xml = '<Asset>
+    linkURL = "#{$V1HOST['base_uri']}/rest-1.v1/Data/Link"
+    idRef = storyURI.split('/').last
+
+    statusXml = '<Asset>
     <Attribute name="Custom_JIRAIntStatus" act="set">Custom_JIRA_Int_Status:64902</Attribute>
     </Asset>'
 
-    result = self.class.post("#{storyURI}", :body => xml,
+    linkXml = '<Asset>
+	<Relation name="Asset" act="set">
+	    <Asset idref="Defect:' + idRef + '" />
+	</Relation>
+	<Attribute name="Name" act="set">JIRA Link</Attribute>
+  <Attribute name="OnMenu" act="set">True</Attribute>
+	<Attribute name="URL" act="set">' + @JiraLink + '</Attribute>
+</Asset>'
+
+    r_status = self.class.post("#{storyURI}", :body => statusXml,
                              :headers => {"content_type" => "application/xml"})
 
-    unless (result['Error'])
+    r_link = self.class.post("#{linkURL}", :body => linkXml,
+                             :headers => {"content_type" => "application/xml"})
+
+    # If link fails to update, it's still ok
+    unless (r_status['Error'])
       @persist.updateDefectStatus(@story)
       return 1
     end
     return 0
+  end
+
+  def setJiraLink(link)
+    @JiraLink = link
   end
 
   def get_story
