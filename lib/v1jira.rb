@@ -56,6 +56,8 @@ class V1Jira
                  :headers => {'Content-Type' => 'application/json' })
 
     url = $JIRA['base_uri'] + "/browse/" + response['key']
+    @defect.setJiraLink(url)
+
     return url
   end
 
