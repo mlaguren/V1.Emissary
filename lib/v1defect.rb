@@ -58,14 +58,31 @@ class V1Defect
   def updateStatus
     # Send to JIRA: Custom_JIRA_Int_Status:64901
     # Resolved in JIRA:  Custom_JIRA_Int_Status:64902
-    
+
     storyURI = @details['Assets']['Asset']['href']
-    linkURL = "#{$V1HOST['base_uri']}/rest-1.v1/Data/Link"
-    idRef = storyURI.split('/').last
 
     statusXml = '<Asset>
     <Attribute name="Custom_JIRAIntStatus" act="set">Custom_JIRA_Int_Status:64902</Attribute>
     </Asset>'
+
+    r_status = self.class.post("#{storyURI}", :body => statusXml,
+                             :headers => {"content_type" => "application/xml"})
+
+    unless (r_status['Error'])
+      @persist.updateDefectStatus(@story)
+      return 1
+    end
+    return 0
+  end
+
+  def setJiraLink(link)
+    @JiraLink = link
+    linkURL = "#{$V1HOST['base_uri']}/rest-1.v1/Data/Link"
+
+    storyURI = @details['Assets']['Asset']['href']
+    return 0 unless storyURI.length > 0
+
+    idRef = storyURI.split('/').last
 
     linkXml = '<Asset>
 	<Relation name="Asset" act="set">
@@ -76,25 +93,14 @@ class V1Defect
 	<Attribute name="URL" act="set">' + @JiraLink + '</Attribute>
 </Asset>'
 
-    r_status = self.class.post("#{storyURI}", :body => statusXml,
-                             :headers => {"content_type" => "application/xml"})
-
-    # Only post link if it exists
-    if @JiraLink.length() > 0
-      r_link = self.class.post("#{linkURL}", :body => linkXml,
+    return 0 unless @JiraLink.length > 0
+    r_link = self.class.post("#{linkURL}", :body => linkXml,
                                :headers => {"content_type" => "application/xml"})
-    end
-
-    # If link fails to update, it's still ok
-    unless (r_status['Error'])
-      @persist.updateDefectStatus(@story)
+    unless (r_link['Error'])
       return 1
     end
-    return 0
-  end
 
-  def setJiraLink(link)
-    @JiraLink = link
+    return 0
   end
 
   def get_story
