@@ -18,6 +18,10 @@ class V1Persist
     return @db.execute("select * from v1link where defect=\"#{defect}\"")
   end
 
+  def getJiraLinkByDefect(defect)
+    return @db.execute("select jiralink from v1link where defect=\"#{defect}\"")
+  end
+
   def createDefect(defect, jiralink)
     begin
       return @db.execute("insert into v1link (defect, jira_link) values (\"#{defect}\", \"#{jiralink}\")")
