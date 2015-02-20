@@ -79,8 +79,11 @@ class V1Defect
     r_status = self.class.post("#{storyURI}", :body => statusXml,
                              :headers => {"content_type" => "application/xml"})
 
-    r_link = self.class.post("#{linkURL}", :body => linkXml,
-                             :headers => {"content_type" => "application/xml"})
+    # Only post link if it exists
+    if @JiraLink.length() > 0
+      r_link = self.class.post("#{linkURL}", :body => linkXml,
+                               :headers => {"content_type" => "application/xml"})
+    end
 
     # If link fails to update, it's still ok
     unless (r_status['Error'])
