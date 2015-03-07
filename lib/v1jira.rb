@@ -1,6 +1,7 @@
 require './lib/v1defect'
 require 'httparty'
 require 'nokogiri'
+require 'sanitize'
 require 'json'
 
 require 'awesome_print'
@@ -14,40 +15,12 @@ class V1Jira
   base_uri $JIRA['base_uri'] 
 
   def initialize(defect)
-    @DEFAULT = YAML::load(File.open("default/jira.yml"))
     @customFieldMap = getAllFieldsMap
     @defect = defect
   end
 
   def getAllFieldsMap
     @customFieldMap = self.class.get("/rest/api/2/field")
-  end
-
-  def jw_create_ticket(defect)
-    jiraPair = defect.getJiraList
-
-    payload = {
-        :fields =>
-            {:project =>
-                 {:key => "#{@DEFAULT['project']}"},
-             :summary => "Test Summary",
-             :description => "Test Description",
-             :customfield_10143 => [
-                 {
-                     :self => @DEFAULT['environment']['self'],
-                     :value => @DEFAULT['environment']['value'],
-                     :id => @DEFAULT['environment']['id']
-                 }
-             ],
-             :issuetype => {:name => @DEFAULT['issuetype']['name']},
-             :customfield_10181 => {:value => "WDS"},
-             :customfield_12614 => {:id => "13634"}
-            },
-    }
-    response = self.class.post("/rest/api/2/issue/",
-                               :body => payload.to_json,
-                               :headers => {'Content-Type' => 'application/json' })
-    return response
   end
 
   def jiraAPIMapping
@@ -62,24 +35,19 @@ class V1Jira
 
   def create_ticket
     jiraPair = @defect.getJiraList
-
     mapping = jiraAPIMapping
     payload = {
         :fields =>
             {:project =>
-                 {:key => "#{@DEFAULT['project']}"},
+                 {:key => "#{jiraPair['Project']}"},
              :summary => jiraPair['Summary'] + " (#{@defect.get_story})",
-             :description => jiraPair['Description'],
-             :customfield_10143 => [
-                 {
-                     :self => @DEFAULT['environment']['self'],
-                     :value => @DEFAULT['environment']['value'],
-                     :id => @DEFAULT['environment']['id']
-                 }
-             ],
+             :description => Sanitize.clean(jiraPair['Description']),
+             mapping['Release Milestone'] => {:value => jiraPair['Release Milestone']},
+             :customfield_10143 => [{:value => jiraPair['Environment'],}],
              :issuetype => {:name => jiraPair['issuetype']},
-             mapping['Functional Group'] => {:value => "WDS"},
-             mapping['Project Manager'] => {:id => "13634"}
+             mapping['Functional Group'] => {:value => jiraPair['Functional Group']},
+             mapping['Project Manager'] => {:value => jiraPair['Project Manager']},
+             :versions => [{:name => "#{jiraPair['Release']}",}],
             },
     }
 
