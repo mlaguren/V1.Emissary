@@ -2,6 +2,7 @@ require 'httparty'
 require 'nokogiri'
 require 'sqlite3'
 
+# This class identifies defects that needs to be duplicated to Jira.  This class also tracts state of those tickets.
 class V1Trigger
   include HTTParty
   include Nokogiri
@@ -21,6 +22,15 @@ class V1Trigger
     @TRIGGER_STATUS = 'Complete'
   end
 
+  # Gets a list of tickets in Jira that are in completed state.  These tickets are ready to be closed in VersionOne.
+  #
+  # ==== Return
+  #
+  # * +list+ - List of Jira tickets that are not closed in VersionOne.
+  #
+  # ==== Examples
+  #
+  # list = V1Trigger.get_Jira_list
   def get_Jira_list
     l = Array.new
 
@@ -37,6 +47,15 @@ class V1Trigger
     return l
   end
 
+  # Gets a list of tickets in Jira that are in completed state.  These tickets are ready to be closed in VersionOne.
+  #
+  # ==== Return
+  #
+  # * +list+ - List of Jira tickets that are not closed in VersionOne.
+  #
+  # ==== Examples
+  #
+  # list = V1Trigger.get_v1defect_Jira_list
   def get_v1defect_Jira_list
     l = Array.new
 
@@ -53,6 +72,17 @@ class V1Trigger
     return l
   end
 
+  # Returns a list of defects in VersionOne that have "Send to JIRA" flag set.  Tickets in this state
+  # Needs an associated Jira ticket created.  The method will also create an entry of the defect in the database so
+  # its state can be tracked.
+  #
+  # ==== Return
+  #
+  # * +list+ - List of defects that needs to have Jira tickets created.
+  #
+  # ==== Examples
+  #
+  # list = V1Trigger.get_v1_list
   def get_v1_list
     theSelectionURi="sel=Number&where=Custom_JIRAIntStatus.Name='Send to JIRA'"
     uri=URI.encode("#{$V1HOST['base_uri']}/rest-1.v1/Data/Defect?#{theSelectionURi}")
