@@ -86,7 +86,7 @@ class V1Trigger
   def get_v1_list
     theSelectionURi="sel=Number&where=Custom_JIRAIntStatus.Name='Send to JIRA'"
     uri=URI.encode("#{$V1HOST['base_uri']}/rest-1.v1/Data/Defect?#{theSelectionURi}")
-    updateList = self.class.get("#{uri}")
+    updateList = self.class.get("#{uri}", :verify => false)
 
     list = Array.new
     doc = Nokogiri::XML(updateList.body)
