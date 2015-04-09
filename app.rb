@@ -4,7 +4,9 @@ require './lib/v1trigger'
 require 'yaml'
 require 'httparty'
 
-  # Check if the rss file is configured
+  p Time.new.inspect
+
+# Check if the rss file is configured
   if File.file?('./config/v1config.yml')
     v1 = V1Trigger.new
     list = v1.get_v1_list
