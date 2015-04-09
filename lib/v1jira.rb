@@ -12,6 +12,8 @@ class V1Jira
   include HTTParty
 #  debug_output $stdout
 
+  default_options.update(verify: false)
+
   $JIRA = YAML::load(File.open("config/jiraconfig.yml"))
   basic_auth $JIRA['username'], $JIRA['password']
   base_uri $JIRA['base_uri']

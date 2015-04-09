@@ -10,6 +10,8 @@ class V1Defect
   include HTTParty
   include Nokogiri
 
+  default_options.update(verify: false)
+
   $V1HOST = YAML::load(File.open("config/v1config.yml"))
   basic_auth $V1HOST['username'], $V1HOST['password']
   base_uri $V1HOST['base_url']

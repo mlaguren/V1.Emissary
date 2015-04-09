@@ -8,6 +8,8 @@ class V1Trigger
   include Nokogiri
   include SQLite3
 
+  default_options.update(verify: false)
+
   $V1HOST = YAML::load(File.open("config/v1config.yml"))
   $JIRA = YAML::load(File.open("config/jiraconfig.yml"))
   basic_auth $V1HOST['username'], $V1HOST['password']
