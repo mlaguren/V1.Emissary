@@ -32,7 +32,7 @@ class V1Jira
   #
   # map = getAllFieldsMap
   def getAllFieldsMap
-    @customFieldMap = self.class.get("/rest/api/2/field")
+    @customFieldMap = self.class.get("/rest/api/2/field", :verify => false)
   end
 
   # Creates a mapping hash that has VersionOne API element as Key, and associated Jira API element as value.
@@ -84,7 +84,8 @@ class V1Jira
 
     response = self.class.post('/rest/api/latest/issue/',
                  :body => payload.to_json,
-                 :headers => {'Content-Type' => 'application/json' })
+                 :headers => {'Content-Type' => 'application/json' },
+                 :verify => false)
 
     url = ""
     if response['key']
@@ -100,7 +101,7 @@ class V1Jira
 
   # Deprecated - To be removed.
   def get_ticket
-    ticket_details = self.class.get("/rest/api/2/issue/")
+    ticket_details = self.class.get("/rest/api/2/issue/", :verify => false)
     File.open("custom.txt", 'w') {|f| f.write(ticket_details) }
   end
 

@@ -48,11 +48,11 @@ class V1Defect
     end 
     
     uri="#{$V1HOST['base_uri']}/rest-1.v1/Data/Defect?#{theSelection}&where=Number"
-    details = self.class.get("#{uri}=\'#{@story}\'")
+    details = self.class.get("#{uri}=\'#{@story}\'", :verify => false)
     return details
   end
 
-  # Prepares translation of Jira and VersionOne values.  Values starting with
+  # Creates the values to insert into Jira based on VersionOne values
   # "-" is ignored as there is no Jira counterpart.
   #
   # ==== Return
@@ -107,7 +107,7 @@ class V1Defect
     </Asset>'
 
     r_status = self.class.post("#{storyURI}", :body => statusXml,
-                             :headers => {"content_type" => "application/xml"})
+                             :headers => {"content_type" => "application/xml"}, :verify => false)
 
     unless (r_status['Error'])
       @persist.updateDefectStatus(@story)
@@ -149,7 +149,7 @@ class V1Defect
 
     return 0 unless @JiraLink.length > 0
     r_link = self.class.post("#{linkURL}", :body => linkXml,
-                               :headers => {"content_type" => "application/xml"})
+                               :headers => {"content_type" => "application/xml"}, :verify => false)
     unless (r_link['Error'])
       return 1
     end
