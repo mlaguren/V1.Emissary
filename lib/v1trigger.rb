@@ -67,6 +67,13 @@ class V1Trigger
         doc = HTTParty.get('http://jiradev/rest/api/2/issue/' + issue.split('/').last + '?fields=status',
                            :basic_auth => auth)
         i = @db.execute('select defect from v1link where jira_link = "' + issue + '"')
+
+        if doc['errorMessages']
+          p "Error (#{i[0][0]}): " + doc.to_s
+        else
+          l.push(i[0][0]) if doc['fields']['status']['name'] == @TRIGGER_STATUS
+        end
+
         l.push(i[0][0]) if doc['fields']['status']['name'] == @TRIGGER_STATUS
       end
     end
