@@ -39,7 +39,7 @@ class V1Trigger
     @db.execute("select jira_link from v1link where jira_link is not null and status is null").each do |row|
         row.each do |issue|
           auth = {:username => $JIRA['username'], :password => $JIRA['password']}
-          doc = HTTParty.get('http://jiradev/rest/api/2/issue/' + issue.split('/').last + '?fields=status',
+          doc = HTTParty.get($JIRA['base_uri'] + 'rest/api/2/issue/' + issue.split('/').last + '?fields=status',
             :basic_auth => auth)
 
           l << issue if doc['fields']['status']['name'] == @TRIGGER_STATUS
@@ -64,7 +64,7 @@ class V1Trigger
     @db.execute("select jira_link from v1link where jira_link is not null and status is null").each do |row|
       row.each do |issue|
         auth = {:username => $JIRA['username'], :password => $JIRA['password']}
-        doc = HTTParty.get('http://jiradev/rest/api/2/issue/' + issue.split('/').last + '?fields=status',
+        doc = HTTParty.get($JIRA['base_uri'] + 'rest/api/2/issue/' + issue.split('/').last + '?fields=status',
                            :basic_auth => auth)
         i = @db.execute('select defect from v1link where jira_link = "' + issue + '"')
 
