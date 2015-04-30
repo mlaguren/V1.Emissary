@@ -22,8 +22,8 @@ class V1Defect
   # ==== Return
   #
   # * +story+ - VersionOne defect ID
-  def initialize(story)
-    @mapping = V1Mapping.new('config/mappings.yml', 'config/static_mappings.yml')
+  def initialize(story, mapping)
+    @mapping = mapping
     @persist = V1Persist.new
     @MAP = @mapping.get_Map
     @sMAP = @mapping.get_sMap
@@ -105,7 +105,7 @@ class V1Defect
     storyURI = @details['Assets']['Asset']['href']
 
     statusXml = '<Asset>
-    <Attribute name="Custom_JIRAIntStatus" act="set">Custom_JIRA_Int_Status:64902</Attribute>
+    <Attribute name="Custom_JIRAIntStatus" act="set">' + @@v1_Send_To_Jira_OID['Resolved in JIRA'] + '</Attribute>
     </Asset>'
 
     r_status = self.class.post("#{storyURI}", :body => statusXml,
