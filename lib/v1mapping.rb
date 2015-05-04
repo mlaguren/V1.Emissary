@@ -14,15 +14,17 @@ class V1Mapping
     @v1smapper = YAML::load(File.open(file2))
     @rsmapper = @v1smapper.invert
     @rmapper = @v1mapper.invert
-    @SendToJiraMap = get_Send_To_Jira_VersionOne_OID
+    @SendToJiraMap = Hash.new
+
+    self.get_Send_To_Jira_VersionOne_OID
   end
 
-  def get_Send_To_Jira_Map
-    return @sendToJiraMap
+  def SendToJiraMap
+    th = @SendToJiraMap
+    return th
   end
 
   def get_Send_To_Jira_VersionOne_OID
-    th = Hash.new
     v1host = YAML::load(File.open("config/v1config.yml"))
     uri=v1host['base_url'] + '/' + v1host['base_uri'] + '/rest-1.v1/Data/Custom_JIRA_Int_Status'
 
@@ -31,10 +33,8 @@ class V1Mapping
 
     @ids = Nokogiri::XML(details.body)
     @ids.xpath('//Asset').each do |n|
-      th[n.xpath('Attribute[@name="Name"]').text] = n['id']
+      @SendToJiraMap[n.xpath('Attribute[@name="Name"]').text] = n['id']
     end
-
-    return th
   end
 
   # Converts map data to JSON presentation.
