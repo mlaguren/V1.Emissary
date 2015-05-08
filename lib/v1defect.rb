@@ -112,7 +112,9 @@ class V1Defect
     r_status = self.class.post("#{storyURI}", :body => statusXml,
                              :headers => {"content_type" => "application/xml"}, :verify => false)
 
-    unless (r_status['Error'])
+    if r_status['Error']
+       p r_status['Error']
+    else
       @persist.updateDefectStatus(@story)
       return 1
     end
@@ -158,6 +160,15 @@ class V1Defect
     end
 
     return 0
+  end
+
+  # Returns the VersionOne defect ID this instance represents.
+  #
+  # ==== Examples
+  #
+  # V1Defect.setDefectError("My error message")
+  def setDefectError(err)
+    @persist.updateDefectError(@story, err)
   end
 
   # Returns the VersionOne defect ID this instance represents.

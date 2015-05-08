@@ -86,6 +86,25 @@ class V1Persist
     end
   end
 
+  # Updates a defect in the database when it errors out
+  #
+  # ==== Attributes
+  #
+  # * +defect+ - VersionOne defect ID
+  # * +err+ - Error returned from creating Jira ticket
+  #
+  # ==== Examples
+  #
+  # V1Persist.updateDefectError("D-12345", "Error: Invalid field data")
+  def updateDefectError(defect, err)
+    begin
+      ins = @db.prepare('update v1link set errormsg = (?) where defect = (?)')
+      return ins.execute(err, defect)
+    rescue SQLite3::Exception => e
+      print "Exception (v1persist): #{e}"
+    end
+  end
+
   # Updates the status of the defect to complete.
   #
   # ==== Attributes

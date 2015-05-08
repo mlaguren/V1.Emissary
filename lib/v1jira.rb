@@ -94,9 +94,10 @@ class V1Jira
       url = $JIRA['base_uri'] + "/browse/" + response['key']
       @defect.setJiraLink(url)
     else
-      p "Error (#{@defect.get_story}): #{response}"
+      errormsg =  "Error (#{@defect.get_story}): #{response}"
+      p errormsg
+      @defect.setDefectError(errormsg)
     end
-
 
     return url
   end
