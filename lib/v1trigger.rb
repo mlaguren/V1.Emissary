@@ -8,6 +8,8 @@ class V1Trigger
   include Nokogiri
   include SQLite3
 
+  default_options.update(verify: false)
+
   $V1HOST = YAML::load(File.open("config/v1config.yml"))
   $JIRA = YAML::load(File.open("config/jiraconfig.yml"))
   basic_auth $V1HOST['username'], $V1HOST['password']
@@ -37,7 +39,7 @@ class V1Trigger
     @db.execute("select jira_link from v1link where jira_link is not null and status is null").each do |row|
         row.each do |issue|
           auth = {:username => $JIRA['username'], :password => $JIRA['password']}
-          doc = HTTParty.get('http://jiradev/rest/api/2/issue/' + issue.split('/').last + '?fields=status',
+          doc = HTTParty.get($JIRA['base_uri'] + '/rest/api/2/issue/' + issue.split('/').last + '?fields=status',
             :basic_auth => auth)
 
           l << issue if doc['fields']['status']['name'] == @TRIGGER_STATUS
@@ -62,10 +64,15 @@ class V1Trigger
     @db.execute("select jira_link from v1link where jira_link is not null and status is null").each do |row|
       row.each do |issue|
         auth = {:username => $JIRA['username'], :password => $JIRA['password']}
-        doc = HTTParty.get('http://jiradev/rest/api/2/issue/' + issue.split('/').last + '?fields=status',
+        doc = HTTParty.get($JIRA['base_uri'] + '/rest/api/2/issue/' + issue.split('/').last + '?fields=status',
                            :basic_auth => auth)
         i = @db.execute('select defect from v1link where jira_link = "' + issue + '"')
-        l.push(i[0][0]) if doc['fields']['status']['name'] == @TRIGGER_STATUS
+
+        if doc['errorMessages']
+          p "Error (#{i[0][0]}): " + doc.to_s
+        else
+          l.push(i[0][0]) if doc['fields']['status']['name'] == @TRIGGER_STATUS
+        end
       end
     end
 
@@ -86,7 +93,7 @@ class V1Trigger
   def get_v1_list
     theSelectionURi="sel=Number&where=Custom_JIRAIntStatus.Name='Send to JIRA'"
     uri=URI.encode("#{$V1HOST['base_uri']}/rest-1.v1/Data/Defect?#{theSelectionURi}")
-    updateList = self.class.get("#{uri}")
+    updateList = self.class.get("#{uri}", :verify => false)
 
     list = Array.new
     doc = Nokogiri::XML(updateList.body)

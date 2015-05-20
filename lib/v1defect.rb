@@ -10,6 +10,8 @@ class V1Defect
   include HTTParty
   include Nokogiri
 
+  default_options.update(verify: false)
+
   $V1HOST = YAML::load(File.open("config/v1config.yml"))
   basic_auth $V1HOST['username'], $V1HOST['password']
   base_uri $V1HOST['base_url']
@@ -20,8 +22,9 @@ class V1Defect
   # ==== Return
   #
   # * +story+ - VersionOne defect ID
-  def initialize(story)
-    @mapping = V1Mapping.new('config/mappings.yml', 'config/static_mappings.yml')
+  # * +mapping+ - v1Mapping object
+  def initialize(story, mapping)
+    @mapping = mapping
     @persist = V1Persist.new
     @MAP = @mapping.get_Map
     @sMAP = @mapping.get_sMap
@@ -48,11 +51,11 @@ class V1Defect
     end 
     
     uri="#{$V1HOST['base_uri']}/rest-1.v1/Data/Defect?#{theSelection}&where=Number"
-    details = self.class.get("#{uri}=\'#{@story}\'")
+    details = self.class.get("#{uri}=\'#{@story}\'", :verify => false)
     return details
   end
 
-  # Prepares translation of Jira and VersionOne values.  Values starting with
+  # Creates the values to insert into Jira based on VersionOne values
   # "-" is ignored as there is no Jira counterpart.
   #
   # ==== Return
@@ -103,13 +106,15 @@ class V1Defect
     storyURI = @details['Assets']['Asset']['href']
 
     statusXml = '<Asset>
-    <Attribute name="Custom_JIRAIntStatus" act="set">Custom_JIRA_Int_Status:64902</Attribute>
+    <Attribute name="Custom_JIRAIntStatus" act="set">' + @mapping.SendToJiraMap['Resolved in JIRA'] + '</Attribute>
     </Asset>'
 
     r_status = self.class.post("#{storyURI}", :body => statusXml,
-                             :headers => {"content_type" => "application/xml"})
+                             :headers => {"content_type" => "application/xml"}, :verify => false)
 
-    unless (r_status['Error'])
+    if r_status['Error']
+       p r_status['Error']
+    else
       @persist.updateDefectStatus(@story)
       return 1
     end
@@ -149,12 +154,21 @@ class V1Defect
 
     return 0 unless @JiraLink.length > 0
     r_link = self.class.post("#{linkURL}", :body => linkXml,
-                               :headers => {"content_type" => "application/xml"})
+                               :headers => {"content_type" => "application/xml"}, :verify => false)
     unless (r_link['Error'])
       return 1
     end
 
     return 0
+  end
+
+  # Returns the VersionOne defect ID this instance represents.
+  #
+  # ==== Examples
+  #
+  # V1Defect.setDefectError("My error message")
+  def setDefectError(err)
+    @persist.updateDefectError(@story, err)
   end
 
   # Returns the VersionOne defect ID this instance represents.
